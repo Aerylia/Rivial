@@ -1,0 +1,32 @@
+package com.applab.server;
+
+import com.applab.server.messages.RivialProtocol;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+/**
+ * Created by arian on 9-4-2017.
+ */
+
+public class ReplyProtocol {
+
+    RivialProtocol[] replies = new RivialProtocol[10];
+    Socket[] clients = new Socket[10];
+    int nrReplies = 0;
+
+    public void addReply(RivialProtocol reply, Socket client){
+        this.nrReplies ++;
+        this.replies[nrReplies] = reply;
+        this.clients[nrReplies] = client;
+    }
+
+    public void sendReplies() throws IOException {
+        for (int i = 0; i< nrReplies; i++) {
+            ObjectOutputStream out =
+                    new ObjectOutputStream(clients[i].getOutputStream());
+            out.writeObject(replies[i]);
+        }
+    }
+}
