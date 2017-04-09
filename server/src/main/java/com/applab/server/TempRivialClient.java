@@ -161,6 +161,7 @@ public class TempRivialClient {
     {
         GameModel game = new GameModel();
         TempRivialClient temp = new TempRivialClient(game, "localhost", 5964);
+        temp.initializeConnection();
         temp.runClient();
     }
 }
