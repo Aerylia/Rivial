@@ -5,12 +5,14 @@ import com.applab.server.RivialServer;
 import com.applab.server.TempRivialClient;
 import com.applab.server.messages.GetWordMessage;
 
+import java.io.IOException;
+
 
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class GetWordHandler implements RivialHandler {
+public class GetWordHandler extends RivialHandler {
 
     private GetWordMessage message;
 
@@ -19,19 +21,21 @@ public class GetWordHandler implements RivialHandler {
     }
 
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        ReplyProtocol replyProtocol = new ReplyProtocol();
-        String word = server.generateNextWord(message.getID());
-        String[] words = server.getOtherWords(word);
-        message.setWord(word);
-        message.setAlternatives(words);
-        replyProtocol.addReply(message, server.currentClient);
-        return replyProtocol;
-    }
-
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        client.handleWord(message.getWord(), message.getAlternatives());
-        return new ReplyProtocol();
+    public void run(){
+        try {
+            if (serverSide) {
+                ReplyProtocol replyProtocol = new ReplyProtocol();
+                String word = server.generateNextWord(message.getID());
+                String[] words = server.getOtherWords(word);
+                message.setWord(word);
+                message.setAlternatives(words);
+                replyProtocol.addReply(message, clientSocket);
+                replyProtocol.sendReplies();
+            } else {
+                client.handleWord(message.getWord(), message.getAlternatives());
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

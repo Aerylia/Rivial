@@ -5,11 +5,13 @@ import com.applab.server.RivialServer;
 import com.applab.server.TempRivialClient;
 import com.applab.server.messages.CreateGameMessage;
 
+import java.io.IOException;
+
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class CreateGameHandler implements RivialHandler {
+public class CreateGameHandler extends RivialHandler {
 
     CreateGameMessage message;
 
@@ -17,18 +19,16 @@ public class CreateGameHandler implements RivialHandler {
         this.message = message;
     }
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        int game = server.createGame();
-        ReplyProtocol replyProtocol = new ReplyProtocol();
-        message.addGame(game);
-        replyProtocol.addReply(message, server.currentClient);
-        server.joinGame(message.getID(), message.getGame()); // TODO extract gameID from getGame()!
-        return new ReplyProtocol();
-    }
+    public void run() {
+        if (serverSide) {
+            int game = server.createGame();
+            ReplyProtocol replyProtocol = new ReplyProtocol();
+            message.addGame(game);
+            replyProtocol.addReply(message, clientSocket);
+            server.joinGame(message.getID(), message.getGame()); // TODO extract gameID from getGame()!
+        } else {
+            client.handleGame(message.getGame());
 
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        client.handleGame(message.getGame());
-        return new ReplyProtocol();
+        }
     }
 }

@@ -6,13 +6,15 @@ import com.applab.server.TempRivialClient;
 import com.applab.server.messages.GetWordMessage;
 import com.applab.server.messages.StartGameMessage;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class StartGameHandler implements RivialHandler {
+public class StartGameHandler extends RivialHandler {
 
     StartGameMessage message;
 
@@ -21,22 +23,26 @@ public class StartGameHandler implements RivialHandler {
     }
 
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        ReplyProtocol replyProtocol = new ReplyProtocol();
-        Socket[] players = server.getPlayers(message.getGameID());
-        if (server.startGame(message.getID(), message.getGameID())) {
-            for (Socket player : players) {
-                replyProtocol.addReply(message, player);
+    public void run() {
+        try {
+            if (serverSide) {
+                ReplyProtocol replyProtocol = new ReplyProtocol();
+                ArrayList<Socket> players = server.getPlayers(message.getGameID());
+                if (server.startGame(message.getID(), message.getGameID())) {
+                    for (Socket player : players) {
+                        replyProtocol.addReply(message, player);
+                    }
+                }
+                replyProtocol.sendReplies();
+            } else {
+                ReplyProtocol replyProtocol = new ReplyProtocol();
+                client.startGame();
+                replyProtocol.addReply(new GetWordMessage(client.getID()), client.getSocket());
+                replyProtocol.sendReplies();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return replyProtocol;
     }
 
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        ReplyProtocol replyProtocol = new ReplyProtocol();
-        client.startGame();
-        replyProtocol.addReply(new GetWordMessage(client.getID()), client.getSocket());
-        return replyProtocol;
-    }
 }

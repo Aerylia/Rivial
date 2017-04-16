@@ -6,11 +6,13 @@ import com.applab.server.TempRivialClient;
 import com.applab.server.messages.GetWordMessage;
 import com.applab.server.messages.NextTurnMessage;
 
+import java.io.IOException;
+
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class NextTurnHandler implements RivialHandler {
+public class NextTurnHandler extends RivialHandler {
 
     NextTurnMessage message;
 
@@ -19,15 +21,19 @@ public class NextTurnHandler implements RivialHandler {
     }
 
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        return new ReplyProtocol();
+    public void run(){
+        try {
+            if (this.serverSide) {
+
+            } else {
+                client.nextTurn();
+                ReplyProtocol replyProtocol = new ReplyProtocol();
+                replyProtocol.addReply(new GetWordMessage(message.getID()), client.getSocket());
+                replyProtocol.sendReplies();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        client.nextTurn();
-        ReplyProtocol replyProtocol = new ReplyProtocol();
-        replyProtocol.addReply(new GetWordMessage(message.getID()), client.getSocket());
-        return replyProtocol;
-    }
 }

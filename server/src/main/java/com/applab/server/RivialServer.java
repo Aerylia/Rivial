@@ -7,21 +7,30 @@ import com.applab.server.messages.RivialProtocol;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
-public class RivialServer {
+public class RivialServer implements Runnable{
 
     int portNumber;
     private GameModel game;
-    public Socket currentClient;
+    private ServerSocket serverSocket;
+    private ArrayList<Socket> clients;
 
-    public RivialServer(int portNumber, GameModel game){
-        this.portNumber = portNumber;
+    public RivialServer(int portNumber, GameModel game) throws IOException{
         this.game = game;
+        this.serverSocket = new ServerSocket(portNumber);
+        this.clients = new ArrayList<>();
+    }
+
+    public ServerSocket getServerSocket(){
+        return serverSocket;
     }
 
     public int addClient(Socket client){
-        //TODO impl.
-        return 10;
+        if(!clients.contains(client)){
+            clients.add(client);
+        }
+        return clients.indexOf(client);
     }
 
     public int getGames(){
@@ -53,20 +62,20 @@ public class RivialServer {
         return new String[0];
     }
 
-    public Socket[] getPlayers(int gameID){
+    public ArrayList<Socket> getPlayers(int gameID){
         // TODO get players for a game
-        return new Socket[0];
+        return clients;
     }
 
     public boolean startGame(int userID, int gameID){
         // TODO impl Check for allowed start! and start game .
-        return false;
+        return true;
     }
 
     public boolean checkAllEndTurn(int gameID){
         // TODO check if all players past their turn
         // TODO If so, also set back to no end Turn!!
-        return false;
+        return true;
     }
 
     public boolean checkEndGame(int gameID){
@@ -74,24 +83,24 @@ public class RivialServer {
         return false;
     }
 
-    private void runServer(){
+    @Override
+    public void run() {
         try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
-            while (true){ // TODO add threading
-                currentClient = serverSocket.accept();
-                ObjectInputStream in = new ObjectInputStream(
-                        currentClient.getInputStream());
-                try {
-                    // Read protocol
-                    Object input = in.readObject();
-                    RivialProtocol protocol = (RivialProtocol) input;
-                    // Handle message
-                    RivialHandler handler = protocol.getHandler();
-                    ReplyProtocol reply = handler.handleServerSide(this);
-                    // Send reply
-                    reply.sendReplies();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+            while (true){
+                for(Socket client: clients) {
+                    ObjectInputStream in = new ObjectInputStream(
+                            client.getInputStream());
+                    try {
+                        // Read protocol
+                        Object input = in.readObject();
+                        RivialProtocol protocol = (RivialProtocol) input;
+                        // Handle message
+                        RivialHandler handler = protocol.getHandler();
+                        handler.handleServerSide(this, client);
+                        Thread.yield();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (IOException e){
@@ -103,9 +112,14 @@ public class RivialServer {
 
     public static void main(String[] args) throws IOException {
         GameModel game = new GameModel();
-        RivialServer server = new RivialServer(5964, game);
-        server.runServer();
+        try {
+            RivialServer server = new RivialServer(5964, game);
+            RivialDaemon deamon = new RivialDaemon(server);
+            deamon.start();
+            (new Thread(server)).start();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
 
     }
-
 }

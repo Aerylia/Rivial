@@ -17,9 +17,9 @@ public class ReplyProtocol {
     int nrReplies = 0;
 
     public void addReply(RivialProtocol reply, Socket client){
-        this.nrReplies ++;
         this.replies[nrReplies] = reply;
         this.clients[nrReplies] = client;
+        this.nrReplies ++;
     }
 
     public void sendReplies() throws IOException {

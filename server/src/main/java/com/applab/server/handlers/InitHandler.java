@@ -5,13 +5,14 @@ import com.applab.server.RivialServer;
 import com.applab.server.TempRivialClient;
 import com.applab.server.messages.InitMessage;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class InitHandler implements RivialHandler {
+public class InitHandler extends RivialHandler {
 
     private InitMessage message;
 
@@ -19,17 +20,18 @@ public class InitHandler implements RivialHandler {
         this.message = message;
     }
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        Socket client = server.currentClient;
-        ReplyProtocol reply = new ReplyProtocol();
-        message.setID(server.addClient(client));
-        reply.addReply(message, client);
-        return reply;
-    }
-
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        client.setID(message.getID());
-        return new ReplyProtocol();
+    public void run(){
+        try{
+            if(serverSide){
+                ReplyProtocol reply = new ReplyProtocol();
+                message.setID(server.addClient(clientSocket));
+                reply.addReply(message, clientSocket);
+                reply.sendReplies();
+            } else {
+                client.setID(message.getID());
+            }
+        } catch (IOException e){
+                e.printStackTrace();
+        }
     }
 }

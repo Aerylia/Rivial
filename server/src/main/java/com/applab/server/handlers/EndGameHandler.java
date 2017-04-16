@@ -5,11 +5,13 @@ import com.applab.server.RivialServer;
 import com.applab.server.TempRivialClient;
 import com.applab.server.messages.EndGameMessage;
 
+import java.io.IOException;
+
 /**
  * Created by arian on 9-4-2017.
  */
 
-public class EndGameHandler implements RivialHandler {
+public class EndGameHandler extends RivialHandler {
 
     EndGameMessage message;
 
@@ -17,13 +19,11 @@ public class EndGameHandler implements RivialHandler {
         this.message = message;
     }
     @Override
-    public ReplyProtocol handleServerSide(RivialServer server) {
-        return new ReplyProtocol();
-    }
+    public void run(){
+        if(serverSide){
 
-    @Override
-    public ReplyProtocol handleClientSide(TempRivialClient client) {
-        client.endGame();
-        return new ReplyProtocol();
+        } else {
+            client.endGame();
+        }
     }
 }
