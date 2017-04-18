@@ -4,7 +4,10 @@ package com.applab.server;
  * Created by arian on 9-4-2017.
  */
 
+import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
+import com.applab.model.GameTile;
 import com.applab.model.Player;
 import com.applab.server.handlers.RivialHandler;
 import com.applab.server.messages.CreateGameMessage;
@@ -110,6 +113,11 @@ public class TempRivialClient implements Runnable {
     }
 
 
+    public void handleCapturedTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException{
+        if(this.game.getId() == game.getId()){
+            this.game.tileCaptured(tile, player);
+        }
+    }
 
     public void createGame(){
         System.out.println("Game: Creating new Game");

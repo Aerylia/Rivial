@@ -2,7 +2,9 @@ package com.applab.server;
 // How to get the server running seperately: https://docs.oracle.com/javase/tutorial/networking/sockets/clientServer.html
 
 import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
+import com.applab.model.GameTile;
 import com.applab.model.Player;
 import com.applab.model.WordList;
 import com.applab.server.handlers.RivialHandler;
@@ -47,8 +49,8 @@ public class RivialServer implements Runnable{
         return games;
     }
 
-    public boolean joinGame(Player player, GameModel game){
-        return game.addPlayer(player);
+    public boolean joinGame(Player player, GameModel game) throws GameNotFoundException{
+        return this.getGameWithID(game.getId()).addPlayer(player);
     }
 
     public GameModel createGame(Player player){
@@ -66,12 +68,16 @@ public class RivialServer implements Runnable{
         throw new GameNotFoundException();
     }
 
-    public ArrayList<Player> getPlayers(GameModel game) {
-        return game.getPlayers();
+    public ArrayList<Player> getPlayers(GameModel game) throws GameNotFoundException{
+        return this.getGameWithID(game.getId()).getPlayers();
     }
 
     public boolean canStartGame(Player player, GameModel game) {
         return game.canStartGame(player);
+    }
+
+    public void handleCapturedTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException, GameNotFoundException{
+        this.getGameWithID(game.getId()).tileCaptured(tile, player);
     }
 
     @Override

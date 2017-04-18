@@ -1,5 +1,6 @@
-package com.vanerp.slimstampen.slimstampen;
+package com.applab.model;
 
+import android;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

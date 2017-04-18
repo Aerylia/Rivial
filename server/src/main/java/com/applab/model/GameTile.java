@@ -22,6 +22,8 @@ public class GameTile implements Serializable{
         this.id = id;
     }
 
+    public int getId(){ return id; }
+
     public String getWord() {
         return wordPair.getWord();
     }
