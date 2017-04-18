@@ -23,26 +23,28 @@ public class TempRivialClient implements Runnable {
     private int portNumber;
     private String ip;
     private GameModel game; //TODO make this client game model, different from server model!!! possibly
-    private int id;
     private Socket socket;
+    private Player player;
+
+    public TempRivialClient(String ip, int port) throws IOException{
+        this.portNumber = port;
+        this.ip = ip;
+        this.socket = new Socket(this.ip, this.portNumber);
+        this.initializeConnection();
+    }
 
     public Socket getSocket(){
         return this.socket;
     }
 
-    public TempRivialClient(GameModel game, String ip, int port) throws IOException{
-        this.portNumber = port;
-        this.ip = ip;
-        this.socket = new Socket(this.ip, this.portNumber);
+    public void setPlayer(Player player){
+        this.player = player;
     }
 
-    public void setID(int id){
-        this.id = id;
-    }
-    public int getID(){ return id; }
+    public Player getPlayer(){ return player; }
 
     public void handleGames(ArrayList<GameModel> games){
-        //TODO impl.
+        //TODO impl. Show games and let the user pick one.
     }
 
     public void handleGame(GameModel game){
@@ -53,37 +55,30 @@ public class TempRivialClient implements Runnable {
         // TODO impl.
     }
 
-    public void answerCorrect(boolean isCorrect){
-        // TODO impl.
-    }
-
-    public void handleWord(String word, String[] alternatives){
-        // TODO impl.
-    }
-
-    public void nextTurn(){
-        // TODO impl.
-    }
-
     public void startGame(){
         // TODO impl.
     }
 
-    public void playerJoinedGame(Player player){
-        this.game.addPlayer(player); // TODO check & send exception!
+    public void playerJoinedGame(Player player, GameModel game){
+        if (this.game == null){
+            this.game = game;
+            this.game.addPlayer(player);
+        } else if(this.game.equals(game)) { // TODO check & send Exception!
+            this.game.addPlayer(player); // TODO check & send exception!
+        }
     }
 
-    public void initStartGame(int gameID){
+    public void initializeStartGame(){
         try {
             ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new StartGameMessage(this.id, gameID), socket);
+            reply.addReply(new StartGameMessage(game, player), socket);
             reply.sendReplies();
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    public void initializeConnection(){
+    private void initializeConnection(){
         try {
             ReplyProtocol reply = new ReplyProtocol();
             reply.addReply(new InitMessage(), socket);
@@ -104,10 +99,10 @@ public class TempRivialClient implements Runnable {
         }
     }
 
-    public void joinGame(int gameID){
+    public void joinGame(GameModel game){
         try {
             ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new JoinGameMessage(this.id, gameID), socket);
+            reply.addReply(new JoinGameMessage(player, game), socket);
             reply.sendReplies();
         } catch (IOException e){
             e.printStackTrace();
@@ -118,11 +113,15 @@ public class TempRivialClient implements Runnable {
         System.out.println("Game: Creating new Game");
         try {
             ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new CreateGameMessage(this.id), socket);
+            reply.addReply(new CreateGameMessage(this.player), socket);
             reply.sendReplies();
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void startFailed() {
+        // TODO
     }
 
     public void run(){
@@ -153,19 +152,14 @@ public class TempRivialClient implements Runnable {
     public static void main(String[] args)
     {
         try {
-            GameModel game = new GameModel();
-            TempRivialClient temp = new TempRivialClient(game, "localhost", 5964);
-            temp.initializeConnection();
+            TempRivialClient temp = new TempRivialClient("localhost", 5964);
             (new Thread(temp)).start();
-            temp.getGames();
             temp.createGame();
-            temp.endTurn(56, "Hello World!");
+            temp.getGames();
+
         }catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    public void startFailed() {
-        // TODO
-    }
 }

@@ -32,7 +32,7 @@ public class JoinGameHandler extends RivialHandler {
                 }
                 reply.sendReplies();
             } else {
-                client.playerJoinedGame(message.getPlayer());
+                client.playerJoinedGame(message.getPlayer(), message.getGame());
             }
         }catch (IOException e){
             e.printStackTrace();

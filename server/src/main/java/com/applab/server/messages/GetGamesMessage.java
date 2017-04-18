@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class GetGamesMessage extends RivialProtocol {
 
 
-    private ArrayList<GameModel> games; //TODO make proper class.
+    private ArrayList<GameModel> games;
 
     public void addGames(ArrayList<GameModel> games){
         this.games = games;

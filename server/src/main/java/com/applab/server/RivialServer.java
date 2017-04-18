@@ -16,7 +16,7 @@ public class RivialServer implements Runnable{
     int portNumber;
     private ArrayList<GameModel> games;
     private ServerSocket serverSocket;
-    private ArrayList<Socket> clients;
+    private ArrayList<Player> clients;
     private ArrayList<String> words;
     private ArrayList<String> translations;
 
@@ -33,11 +33,15 @@ public class RivialServer implements Runnable{
         return serverSocket;
     }
 
-    public int addClient(Socket client){
-        if(!clients.contains(client)){
-            clients.add(client);
+    public Player addClient(Socket client){
+        for(Player player: clients){
+            if(player.getSocket().equals(client)){
+                return player;
+            }
         }
-        return clients.indexOf(client);
+        Player player = new Player(client, clients.size());
+        clients.add(player);
+        return player;
     }
 
     public ArrayList<GameModel> getGames(){
@@ -71,7 +75,8 @@ public class RivialServer implements Runnable{
     public void run() {
         try {
             while (true){
-                for(Socket client: clients) {
+                for(Player player: clients) {
+                    Socket client = player.getSocket();
                     ObjectInputStream in = new ObjectInputStream(
                             client.getInputStream());
                     try {

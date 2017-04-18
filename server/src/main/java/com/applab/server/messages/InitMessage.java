@@ -1,5 +1,6 @@
 package com.applab.server.messages;
 
+import com.applab.model.Player;
 import com.applab.server.handlers.InitHandler;
 import com.applab.server.handlers.RivialHandler;
 
@@ -9,14 +10,14 @@ import com.applab.server.handlers.RivialHandler;
 
 public class InitMessage extends RivialProtocol {
 
-    private int id;
+    private Player player;
 
-    public void setID(int id){
-        this.id = id;
+    public void setPlayer(Player player){
+        this.player = player;
     }
 
-    public int getID(){
-        return this.id;
+    public Player getPlayer(){
+        return this.player;
     }
 
     @Override

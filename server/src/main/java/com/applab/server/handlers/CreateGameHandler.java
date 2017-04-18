@@ -22,7 +22,7 @@ public class CreateGameHandler extends RivialHandler {
     @Override
     public void run() {
         if (serverSide) {
-            GameModel game = server.createGame();
+            GameModel game = server.createGame(message.getPlayer());
             ReplyProtocol replyProtocol = new ReplyProtocol();
             message.addGame(game);
             replyProtocol.addReply(message, clientSocket);

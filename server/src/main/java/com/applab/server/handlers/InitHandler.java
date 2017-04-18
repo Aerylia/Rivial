@@ -24,11 +24,11 @@ public class InitHandler extends RivialHandler {
         try{
             if(serverSide){
                 ReplyProtocol reply = new ReplyProtocol();
-                message.setID(server.addClient(clientSocket));
+                message.setPlayer(server.addClient(clientSocket));
                 reply.addReply(message, clientSocket);
                 reply.sendReplies();
             } else {
-                client.setID(message.getID());
+                client.setPlayer(message.getPlayer());
             }
         } catch (IOException e){
                 e.printStackTrace();
