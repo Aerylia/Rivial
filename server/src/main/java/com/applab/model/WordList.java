@@ -1,10 +1,10 @@
-package com.vanerp.slimstampen.slimstampen;
+package com.applab.model;
 
-import android.content.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -12,7 +12,7 @@ import java.util.Random;
  *
  */
 
-public class WordList {
+public class WordList implements Serializable{
 
     private ArrayList<Item> wordList;
 
@@ -20,7 +20,7 @@ public class WordList {
      * Create a new empty WordList
      */
     public WordList() {
-        wordList = new ArrayList<Item>();
+        wordList = new ArrayList<>();
     }
 
     /**
@@ -29,9 +29,10 @@ public class WordList {
      *                 Each line should be formatted like: word = translation
      * @return the updated WordList
      */
-    public WordList loadFromFile(String fileName) {
-
-        return this;
+    public static WordList loadFromFile(String fileName) {
+        WordList wordList = new WordList();
+        // TODO fill wordlist from file filename
+        return wordList;
     }
 
     /**
@@ -40,7 +41,7 @@ public class WordList {
      *                 Each line should be formatted like: word = translation
      * @return the updated WordList
      */
-    public WordList loadFromResource(Context ctx, int resourceId) {
+/*    public WordList loadFromResource(Context ctx, int resourceId) {
         InputStream inputStream = ctx.getResources().openRawResource(resourceId);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
@@ -53,7 +54,7 @@ public class WordList {
         }
         return this;
     }
-
+*/
     /**
      * Add an item
      * @param word The word the user knows

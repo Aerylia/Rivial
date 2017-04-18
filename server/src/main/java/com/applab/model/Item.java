@@ -1,9 +1,11 @@
-package com.vanerp.slimstampen.slimstampen;
+package com.applab.model;
+
+import java.io.Serializable;
 
 /**
  * Created by Douwe on 9-4-2017.
  */
-public class Item {
+public class Item implements Serializable {
 
     private String word;
     private String translation;

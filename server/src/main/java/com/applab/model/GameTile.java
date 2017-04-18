@@ -8,16 +8,14 @@ import java.io.Serializable;
 
 public class GameTile implements Serializable{
 
-    private String word;
-    private String translation;
+    private Item wordPair;
     private int id;
     private boolean ownedByBlue;
     private boolean ownedByRed;
     private boolean ownedByYellow;
 
-    public GameTile(String word, String translation, int id){
-        this.word = word;
-        this.translation = translation;
+    public GameTile(Item wordPair, int id){
+        this.wordPair = wordPair;
         this.ownedByBlue = false;
         this.ownedByRed = false;
         this.ownedByYellow = false;
@@ -25,11 +23,11 @@ public class GameTile implements Serializable{
     }
 
     public String getWord() {
-        return word;
+        return wordPair.getWord();
     }
 
     public String getTranslation() {
-        return translation;
+        return wordPair.getTranslation();
     }
 
     public boolean isOwnedByBlue() {

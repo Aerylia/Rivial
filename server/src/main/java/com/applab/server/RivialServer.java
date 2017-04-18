@@ -4,6 +4,7 @@ package com.applab.server;
 import com.applab.exceptions.GameNotFoundException;
 import com.applab.model.GameModel;
 import com.applab.model.Player;
+import com.applab.model.WordList;
 import com.applab.server.handlers.RivialHandler;
 import com.applab.server.messages.RivialProtocol;
 
@@ -17,16 +18,14 @@ public class RivialServer implements Runnable{
     private ArrayList<GameModel> games;
     private ServerSocket serverSocket;
     private ArrayList<Player> clients;
-    private ArrayList<String> words;
-    private ArrayList<String> translations;
+    private WordList words;
 
-    public RivialServer(int portNumber, ArrayList<String> words, ArrayList<String> translations) throws IOException{
+    public RivialServer(int portNumber, String filename) throws IOException{
         this.games = new ArrayList<>();
         this.serverSocket = new ServerSocket(portNumber);
         this.clients = new ArrayList<>();
         this.portNumber = portNumber;
-        this.words = words;
-        this. translations = translations;
+        this.words = WordList.loadFromFile(filename);
     }
 
     public ServerSocket getServerSocket(){
@@ -53,7 +52,7 @@ public class RivialServer implements Runnable{
     }
 
     public GameModel createGame(Player player){
-        GameModel game = new GameModel(this.words, this.translations, this.games.size(), player);
+        GameModel game = new GameModel(this.words, this.games.size(), player);
         this.games.add(game);
         return game;
     }
@@ -69,6 +68,10 @@ public class RivialServer implements Runnable{
 
     public ArrayList<Player> getPlayers(GameModel game) {
         return game.getPlayers();
+    }
+
+    public boolean canStartGame(Player player, GameModel game) {
+        return game.canStartGame(player);
     }
 
     @Override
@@ -100,13 +103,12 @@ public class RivialServer implements Runnable{
     }
 
     public static void main(String[] args) throws IOException {
-        ArrayList<String> words = new ArrayList<>();
-        ArrayList<String> translations = new ArrayList<>();
-        // TODO add Words +  translations from csv! or something!
+        String filename = "TODO.csv";
+        int port = 5964;
         try {
-            RivialServer server = new RivialServer(5964, words, translations);
-            RivialDaemon deamon = new RivialDaemon(server);
-            deamon.start();
+            RivialServer server = new RivialServer(port, filename );
+            RivialDaemon daemon = new RivialDaemon(server);
+            daemon.start();
             (new Thread(server)).start();
         }catch (IOException e){
             e.printStackTrace();
@@ -114,7 +116,4 @@ public class RivialServer implements Runnable{
 
     }
 
-    public boolean canStartGame(Player player, GameModel game) {
-        return game.canStartGame(player);
-    }
 }

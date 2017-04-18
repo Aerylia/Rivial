@@ -1,12 +1,10 @@
-package com.vanerp.slimstampen.slimstampen;
+package com.applab.model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
-import static com.vanerp.slimstampen.slimstampen.Trial.*;
 
 /**
  * References
@@ -67,7 +65,7 @@ public class SlimStampen {
      * @return a Trial object
      */
     public Trial nextTrial() {
-        TrialType type;
+        Trial.TrialType type;
         Item item;
         double T = getTime();
 
@@ -81,12 +79,12 @@ public class SlimStampen {
 
         // Return if it's below the threshold
         if (lowest.getActivation() < threshold) {
-            type = TrialType.TEST;
+            type = Trial.TrialType.TEST;
             item = lowest;
             t.get(item).add(T);
         } else {
             // Select random novel item if they are still available
-            type = TrialType.STUDY;
+            type = Trial.TrialType.STUDY;
             item = (novel.size() > 0) ? novel.get( random.nextInt(novel.size()) ) : lowest;
         }
 

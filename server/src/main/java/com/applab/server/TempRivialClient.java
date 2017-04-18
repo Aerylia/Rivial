@@ -109,6 +109,8 @@ public class TempRivialClient implements Runnable {
         }
     }
 
+
+
     public void createGame(){
         System.out.println("Game: Creating new Game");
         try {

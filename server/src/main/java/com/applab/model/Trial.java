@@ -1,4 +1,4 @@
-package com.vanerp.slimstampen.slimstampen;
+package com.applab.model;
 
 /**
  * Class object that will be returned when asking the SlimStampen model for a new trial

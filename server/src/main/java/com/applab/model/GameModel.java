@@ -3,6 +3,8 @@ package com.applab.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import sun.security.acl.WorldGroupImpl;
+
 /**
  * Created by arian on 9-4-2017.
  */
@@ -14,17 +16,17 @@ public class GameModel implements Serializable{
     private ArrayList<Player> players;
     private Player owningPlayer;
 
-    public GameModel(ArrayList<String> words, ArrayList<String> translations, int id, Player owningPlayer){
+    public GameModel(WordList words, int id, Player owningPlayer){
         this.id = id;
         this.players = new ArrayList<>();
-        this.generateMap(words, translations);
+        this.generateMap(words);
         this.owningPlayer = owningPlayer;
     }
 
-    private void generateMap(ArrayList<String> words, ArrayList<String> translations) {
+    private void generateMap(WordList words) {
         this.map = new ArrayList<>();
-        for(int i = 0; i< words.size(); i++){
-            map.add(new GameTile(words.get(i), translations.get(i), i));
+        for(int i = 0; i< words.getItemCount(); i++){
+            map.add(new GameTile(words.getItem(i), i));
         }
     }
 
