@@ -1,6 +1,7 @@
 package com.applab.model;
 
 import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 
 import java.io.Serializable;
@@ -70,16 +71,17 @@ public class GameModel implements Serializable {
         return false;
     }
 
-    public void tileCaptured(GameTile tile, Player player) throws TileNotFoundException {
+    public void tileCaptured(int tile, int player) throws TileNotFoundException, PlayerNotFoundException {
         changeTile(tile, player, true);
     }
 
-    public void tileForgotten(GameTile tile, Player player) throws TileNotFoundException {
+    public void tileForgotten(int tile, int player) throws TileNotFoundException, PlayerNotFoundException {
         changeTile(tile, player, false);
     }
 
-    private void changeTile(GameTile tile, Player player, boolean isOwned) throws TileNotFoundException {
-        GameTile gameTile = this.getTileWithId(tile.getId());
+    private void changeTile(int tile, int playerId, boolean isOwned) throws TileNotFoundException, PlayerNotFoundException {
+        GameTile gameTile = this.getTileWithId(tile);
+        Player player = this.getPlayerById(playerId);
         switch (player.getColor()) {
             case Player.BLUE:
                 gameTile.setOwnedByBlue(isOwned);
@@ -90,8 +92,16 @@ public class GameModel implements Serializable {
             case Player.YELLOW:
                 gameTile.setOwnedByYellow(isOwned);
                 break;
-
         }
+    }
+
+    private Player getPlayerById(int id) throws PlayerNotFoundException{
+        for(Player player : players){
+            if(player.getId() == id){
+                return player;
+            }
+        }
+        throw new PlayerNotFoundException();
     }
 
 }

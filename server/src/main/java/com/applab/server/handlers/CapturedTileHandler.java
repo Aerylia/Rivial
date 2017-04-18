@@ -1,6 +1,7 @@
 package com.applab.server.handlers;
 
 import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
 import com.applab.model.Player;
@@ -37,11 +38,15 @@ public class CapturedTileHandler extends RivialHandler {
                 e.printStackTrace();
             } catch (GameNotFoundException e){
                 e.printStackTrace();
+            } catch (PlayerNotFoundException e){
+                e.printStackTrace();
             }
         } else {
             try {
                 client.handleCapturedTile(message.getGame(), message.getPlayer(), message.getTile());
             } catch (TileNotFoundException e){
+                e.printStackTrace();
+            } catch (PlayerNotFoundException e){
                 e.printStackTrace();
             }
         }

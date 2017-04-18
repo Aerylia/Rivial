@@ -2,6 +2,7 @@ package com.applab.server;
 // How to get the server running seperately: https://docs.oracle.com/javase/tutorial/networking/sockets/clientServer.html
 
 import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
 import com.applab.model.GameTile;
@@ -49,14 +50,27 @@ public class RivialServer implements Runnable{
         return games;
     }
 
-    public boolean joinGame(Player player, GameModel game) throws GameNotFoundException{
-        return this.getGameWithID(game.getId()).addPlayer(player);
+    public boolean joinGame(int player, int game) throws GameNotFoundException, PlayerNotFoundException{
+        return this.getGameWithID(game).addPlayer(getPlayerWithId(player));
     }
 
-    public GameModel createGame(Player player){
-        GameModel game = new GameModel(this.words, this.games.size(), player);
+    private Player getPlayerWithId(int id) throws PlayerNotFoundException{
+        for(Player player: this.clients){
+            if(player.getId() == id){
+                return player;
+            }
+        }
+        throw new PlayerNotFoundException();
+    }
+
+    public GameModel createGame(int player) throws PlayerNotFoundException{
+        GameModel game = new GameModel(this.words, this.games.size(), this.getPlayerWithId(player));
         this.games.add(game);
         return game;
+    }
+
+    public boolean isEndGame(int game) throws GameNotFoundException{
+        return getGameWithID(game).isEndGame();
     }
 
     private GameModel getGameWithID(int gameID) throws GameNotFoundException{
@@ -68,20 +82,20 @@ public class RivialServer implements Runnable{
         throw new GameNotFoundException();
     }
 
-    public ArrayList<Player> getPlayers(GameModel game) throws GameNotFoundException{
-        return this.getGameWithID(game.getId()).getPlayers();
+    public ArrayList<Player> getPlayers(int game) throws GameNotFoundException{
+        return this.getGameWithID(game).getPlayers();
     }
 
     public boolean canStartGame(Player player, GameModel game) {
         return game.canStartGame(player);
     }
 
-    public void handleCapturedTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException, GameNotFoundException{
-        this.getGameWithID(game.getId()).tileCaptured(tile, player);
+    public void handleCapturedTile(int game, int player, int tile) throws TileNotFoundException, GameNotFoundException, PlayerNotFoundException{
+        this.getGameWithID(game).tileCaptured(tile, player);
     }
 
-    public void handleForgottenTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException, GameNotFoundException{
-        this.getGameWithID(game.getId()).tileForgotten(tile, player);
+    public void handleForgottenTile(int game, int player, int tile) throws TileNotFoundException, GameNotFoundException, PlayerNotFoundException{
+        this.getGameWithID(game).tileForgotten(tile, player);
     }
 
     @Override

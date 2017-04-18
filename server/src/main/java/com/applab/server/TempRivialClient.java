@@ -5,6 +5,7 @@ package com.applab.server;
  */
 
 import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
 import com.applab.model.GameTile;
@@ -54,8 +55,10 @@ public class TempRivialClient implements Runnable {
         this.game = game;
     }
 
-    public void endGame(){
-        // TODO impl.
+    public void endGame(int game){
+        if(this.game.getId() == game){
+            // TODO impl.
+        }
     }
 
     public void startGame(){
@@ -112,14 +115,14 @@ public class TempRivialClient implements Runnable {
         }
     }
 
-    public void handleCapturedTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException{
-        if(this.game.getId() == game.getId()){
+    public void handleCapturedTile(int game, int player, int tile) throws TileNotFoundException, PlayerNotFoundException{
+        if(this.game.getId() == game){
             this.game.tileCaptured(tile, player);
         }
     }
 
-    public void handleForgottenTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException{
-        if(this.game.getId() == game.getId()){
+    public void handleForgottenTile(int game, int player, int tile) throws TileNotFoundException, PlayerNotFoundException{
+        if(this.game.getId() == game){
             this.game.tileForgotten(tile, player);
         }
     }
@@ -128,7 +131,7 @@ public class TempRivialClient implements Runnable {
         System.out.println("Game: Creating new Game");
         try {
             ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new CreateGameMessage(this.player), socket);
+            reply.addReply(new CreateGameMessage(this.player.getId()), socket);
             reply.sendReplies();
         } catch (IOException e){
             e.printStackTrace();

@@ -12,26 +12,26 @@ import com.applab.server.handlers.RivialHandler;
 
 public class CapturedTileMessage extends RivialProtocol {
 
-    private GameModel game;
-    private GameTile tile;
-    private Player player;
+    private int gameId;
+    private int tileId;
+    private int playerId;
 
-    public CapturedTileMessage(GameModel game, GameTile tile, Player player){
-        this.game = game;
-        this.tile = tile;
-        this.player = player;
+    public CapturedTileMessage(int gameId, int tileId, int playerId){
+        this.gameId = gameId;
+        this.tileId = tileId;
+        this.playerId = playerId;
     }
 
-    public GameModel getGame() {
-        return game;
+    public int getGame() {
+        return gameId;
     }
 
-    public GameTile getTile() {
-        return tile;
+    public int getTile() {
+        return tileId;
     }
 
-    public Player getPlayer() {
-        return player;
+    public int getPlayer() {
+        return playerId;
     }
 
     @Override

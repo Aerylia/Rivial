@@ -10,13 +10,13 @@ import com.applab.server.handlers.RivialHandler;
 
 public class EndGameMessage extends RivialProtocol {
 
-    private GameModel game;
+    private int game;
 
-    public EndGameMessage(GameModel game){
+    public EndGameMessage(int game){
         this.game = game;
     }
 
-    public GameModel getGame() {
+    public int getGame() {
         return game;
     }
 

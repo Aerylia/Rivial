@@ -1,5 +1,7 @@
 package com.applab.server.handlers;
 
+import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.model.Player;
 import com.applab.server.ReplyProtocol;
 import com.applab.server.RivialServer;
@@ -22,19 +24,21 @@ public class EndGameHandler extends RivialHandler {
     @Override
     public void run(){
         if(serverSide){
-            if(message.getGame().isEndGame()) {
+            if(server.isEndGame(message.getGame())) {
                 try {
                     ReplyProtocol reply = new ReplyProtocol();
-                    for (Player player : message.getGame().getPlayers()) {
+                    for (Player player : server.getPlayers(message.getGame())) {
                         reply.addReply(message, player.getSocket());
                     }
                     reply.sendReplies();
                 } catch (IOException e){
                     e.printStackTrace();
+                } catch (GameNotFoundException e){
+                    e.printStackTrace();
                 }
             }
         } else {
-            client.endGame();
+            client.endGame(message.getGame());
         }
     }
 }
