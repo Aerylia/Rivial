@@ -1,7 +1,9 @@
 package com.applab.server;
 // How to get the server running seperately: https://docs.oracle.com/javase/tutorial/networking/sockets/clientServer.html
 
+import com.applab.exceptions.GameNotFoundException;
 import com.applab.model.GameModel;
+import com.applab.model.Player;
 import com.applab.server.handlers.RivialHandler;
 import com.applab.server.messages.RivialProtocol;
 
@@ -12,14 +14,19 @@ import java.util.ArrayList;
 public class RivialServer implements Runnable{
 
     int portNumber;
-    private GameModel game;
+    private ArrayList<GameModel> games;
     private ServerSocket serverSocket;
     private ArrayList<Socket> clients;
+    private ArrayList<String> words;
+    private ArrayList<String> translations;
 
-    public RivialServer(int portNumber, GameModel game) throws IOException{
-        this.game = game;
+    public RivialServer(int portNumber, ArrayList<String> words, ArrayList<String> translations) throws IOException{
+        this.games = new ArrayList<>();
         this.serverSocket = new ServerSocket(portNumber);
         this.clients = new ArrayList<>();
+        this.portNumber = portNumber;
+        this.words = words;
+        this. translations = translations;
     }
 
     public ServerSocket getServerSocket(){
@@ -33,54 +40,31 @@ public class RivialServer implements Runnable{
         return clients.indexOf(client);
     }
 
-    public int getGames(){
-        // TODO impl.
-        return 1;
+    public ArrayList<GameModel> getGames(){
+        return games;
     }
 
-    public void joinGame(int clientID, int gameID){
-        // TODO impl.
+    public boolean joinGame(Player player, GameModel game){
+        return game.addPlayer(player);
     }
 
-    public int createGame(){
-        // TODO impl.
-        return 2;
+    public GameModel createGame(Player player){
+        GameModel game = new GameModel(this.words, this.translations, this.games.size(), player);
+        this.games.add(game);
+        return game;
     }
 
-    public boolean endTurn(int id, String answer){
-        // TODO check if answer is correct.
-        return false;
+    private GameModel getGameWithID(int gameID) throws GameNotFoundException{
+        for(GameModel game : games){
+            if(game.getId() == gameID){
+                return game;
+            }
+        }
+        throw new GameNotFoundException();
     }
 
-    public String generateNextWord(int id){
-        // TODO generate word with slimstampen.
-        return "";
-    }
-
-    public String[] getOtherWords(String word){
-        // TODO generate words for multiple choice unequal to word!
-        return new String[0];
-    }
-
-    public ArrayList<Socket> getPlayers(int gameID){
-        // TODO get players for a game
-        return clients;
-    }
-
-    public boolean startGame(int userID, int gameID){
-        // TODO impl Check for allowed start! and start game .
-        return true;
-    }
-
-    public boolean checkAllEndTurn(int gameID){
-        // TODO check if all players past their turn
-        // TODO If so, also set back to no end Turn!!
-        return true;
-    }
-
-    public boolean checkEndGame(int gameID){
-        // TODO check if end game and quit game!
-        return false;
+    public ArrayList<Player> getPlayers(GameModel game) {
+        return game.getPlayers();
     }
 
     @Override
@@ -111,9 +95,11 @@ public class RivialServer implements Runnable{
     }
 
     public static void main(String[] args) throws IOException {
-        GameModel game = new GameModel();
+        ArrayList<String> words = new ArrayList<>();
+        ArrayList<String> translations = new ArrayList<>();
+        // TODO add Words +  translations from csv! or something!
         try {
-            RivialServer server = new RivialServer(5964, game);
+            RivialServer server = new RivialServer(5964, words, translations);
             RivialDaemon deamon = new RivialDaemon(server);
             deamon.start();
             (new Thread(server)).start();
@@ -121,5 +107,9 @@ public class RivialServer implements Runnable{
             e.printStackTrace();
         }
 
+    }
+
+    public boolean canStartGame(Player player, GameModel game) {
+        return game.canStartGame(player);
     }
 }

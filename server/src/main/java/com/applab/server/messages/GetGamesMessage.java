@@ -1,7 +1,10 @@
 package com.applab.server.messages;
 
+import com.applab.model.GameModel;
 import com.applab.server.handlers.GetGamesHandler;
 import com.applab.server.handlers.RivialHandler;
+
+import java.util.ArrayList;
 
 /**
  * Created by arian on 9-4-2017.
@@ -10,13 +13,13 @@ import com.applab.server.handlers.RivialHandler;
 public class GetGamesMessage extends RivialProtocol {
 
 
-    private int games; //TODO make proper class.
+    private ArrayList<GameModel> games; //TODO make proper class.
 
-    public void addGames(int games){
+    public void addGames(ArrayList<GameModel> games){
         this.games = games;
     }
 
-    public int getGames() {
+    public ArrayList<GameModel> getGames() {
         return games;
     }
 

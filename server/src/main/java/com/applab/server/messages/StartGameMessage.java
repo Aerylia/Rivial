@@ -1,5 +1,7 @@
 package com.applab.server.messages;
 
+import com.applab.model.GameModel;
+import com.applab.model.Player;
 import com.applab.server.handlers.RivialHandler;
 import com.applab.server.handlers.StartGameHandler;
 
@@ -9,20 +11,29 @@ import com.applab.server.handlers.StartGameHandler;
 
 public class StartGameMessage extends RivialProtocol {
 
-    private int gameID;
-    private int id;
+    private GameModel game;
+    private Player player;
+    private boolean started;
 
-    public StartGameMessage(int userID, int gameID){
-        this.id = userID;
-        this.gameID = gameID;
+    public StartGameMessage(GameModel game, Player player){
+        this.game = game;
+        this.player = player;
     }
 
-    public int getGameID(){
-        return this.gameID;
+    public GameModel getGame() {
+        return game;
     }
 
-    public int getID(){
-        return this.id;
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 
     @Override

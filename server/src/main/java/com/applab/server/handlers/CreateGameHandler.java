@@ -1,5 +1,6 @@
 package com.applab.server.handlers;
 
+import com.applab.model.GameModel;
 import com.applab.server.ReplyProtocol;
 import com.applab.server.RivialServer;
 import com.applab.server.TempRivialClient;
@@ -21,11 +22,11 @@ public class CreateGameHandler extends RivialHandler {
     @Override
     public void run() {
         if (serverSide) {
-            int game = server.createGame();
+            GameModel game = server.createGame();
             ReplyProtocol replyProtocol = new ReplyProtocol();
             message.addGame(game);
             replyProtocol.addReply(message, clientSocket);
-            server.joinGame(message.getID(), message.getGame()); // TODO extract gameID from getGame()!
+            server.joinGame(message.getPlayer(), message.getGame());
         } else {
             client.handleGame(message.getGame());
 

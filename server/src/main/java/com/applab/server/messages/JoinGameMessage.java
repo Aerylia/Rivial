@@ -1,5 +1,7 @@
 package com.applab.server.messages;
 
+import com.applab.model.GameModel;
+import com.applab.model.Player;
 import com.applab.server.handlers.JoinGameHandler;
 import com.applab.server.handlers.RivialHandler;
 
@@ -9,18 +11,20 @@ import com.applab.server.handlers.RivialHandler;
 
 public class JoinGameMessage extends RivialProtocol {
 
-    private int id;
-    private int gameID;
+    private Player player;
+    private GameModel game;
 
-    public JoinGameMessage(int userID, int gameID){
-        this.id = userID;
-        this.gameID = gameID;
+    public JoinGameMessage(Player player, GameModel game){
+        this.player = player;
+        this.game = game;
     }
 
-    public int getGameID(){ return this.gameID; }
+    public Player getPlayer() {
+        return player;
+    }
 
-    public int getID(){
-        return this.id;
+    public GameModel getGame() {
+        return game;
     }
 
     @Override

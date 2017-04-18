@@ -5,9 +5,9 @@ package com.applab.server;
  */
 
 import com.applab.model.GameModel;
+import com.applab.model.Player;
 import com.applab.server.handlers.RivialHandler;
 import com.applab.server.messages.CreateGameMessage;
-import com.applab.server.messages.EndTurnMessage;
 import com.applab.server.messages.GetGamesMessage;
 import com.applab.server.messages.InitMessage;
 import com.applab.server.messages.JoinGameMessage;
@@ -16,6 +16,7 @@ import com.applab.server.messages.StartGameMessage;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class TempRivialClient implements Runnable {
 
@@ -40,12 +41,12 @@ public class TempRivialClient implements Runnable {
     }
     public int getID(){ return id; }
 
-    public void handleGames(int games){
+    public void handleGames(ArrayList<GameModel> games){
         //TODO impl.
     }
 
-    public void handleGame(int game){
-        // TODO impl.
+    public void handleGame(GameModel game){
+        this.game = game;
     }
 
     public void endGame(){
@@ -68,19 +69,8 @@ public class TempRivialClient implements Runnable {
         // TODO impl.
     }
 
-    public void playerJoinedGame(int userID){
-        // TODO impl.
-    }
-
-    public void endTurn(int gameID, String answer){
-        System.out.println("Game: Ending turn!");
-        try {
-            ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new EndTurnMessage(this.id, gameID, answer), socket);
-            reply.sendReplies();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+    public void playerJoinedGame(Player player){
+        this.game.addPlayer(player); // TODO check & send exception!
     }
 
     public void initStartGame(int gameID){
@@ -173,5 +163,9 @@ public class TempRivialClient implements Runnable {
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void startFailed() {
+        // TODO
     }
 }

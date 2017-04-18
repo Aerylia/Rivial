@@ -1,5 +1,7 @@
 package com.applab.server.messages;
 
+import com.applab.model.GameModel;
+import com.applab.model.Player;
 import com.applab.server.handlers.CreateGameHandler;
 import com.applab.server.handlers.RivialHandler;
 
@@ -9,22 +11,23 @@ import com.applab.server.handlers.RivialHandler;
 
 public class CreateGameMessage extends RivialProtocol {
 
-    private int game;
-    private int id;
+    private GameModel game;
+    private Player player;
 
-    public CreateGameMessage(int id){
-        this.id = id;
+    public CreateGameMessage(Player player){
+        this.player = player;
     }
 
-    public int getID(){ return this.id; }
+    public Player getPlayer(){ return this.player; }
 
-    public int getGame() {
+    public GameModel getGame() {
         return game;
     }
 
-    public void addGame(int game){
+    public void addGame(GameModel game){
         this.game = game;
     }
+
     @Override
     public messageType getMessageType() {
         return messageType.CREATE_GAME;
