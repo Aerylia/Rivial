@@ -80,6 +80,10 @@ public class RivialServer implements Runnable{
         this.getGameWithID(game.getId()).tileCaptured(tile, player);
     }
 
+    public void handleForgottenTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException, GameNotFoundException{
+        this.getGameWithID(game.getId()).tileForgotten(tile, player);
+    }
+
     @Override
     public void run() {
         try {

@@ -112,10 +112,15 @@ public class TempRivialClient implements Runnable {
         }
     }
 
-
     public void handleCapturedTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException{
         if(this.game.getId() == game.getId()){
             this.game.tileCaptured(tile, player);
+        }
+    }
+
+    public void handleForgottenTile(GameModel game, Player player, GameTile tile) throws TileNotFoundException{
+        if(this.game.getId() == game.getId()){
+            this.game.tileForgotten(tile, player);
         }
     }
 
