@@ -11,20 +11,20 @@ import com.applab.server.handlers.StartGameHandler;
 
 public class StartGameMessage extends RivialProtocol {
 
-    private GameModel game;
-    private Player player;
+    private int game;
+    private int player;
     private boolean started;
 
-    public StartGameMessage(GameModel game, Player player){
+    public StartGameMessage(int game, int player){
         this.game = game;
         this.player = player;
     }
 
-    public GameModel getGame() {
+    public int getGame() {
         return game;
     }
 
-    public Player getPlayer() {
+    public int getPlayer() {
         return player;
     }
 

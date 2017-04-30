@@ -24,18 +24,22 @@ public class EndGameHandler extends RivialHandler {
     @Override
     public void run(){
         if(serverSide){
-            if(server.isEndGame(message.getGame())) {
-                try {
-                    ReplyProtocol reply = new ReplyProtocol();
-                    for (Player player : server.getPlayers(message.getGame())) {
-                        reply.addReply(message, player.getSocket());
+            try {
+                if (server.isEndGame(message.getGame())) {
+                    try {
+                        ReplyProtocol reply = new ReplyProtocol();
+                        for (Player player : server.getPlayers(message.getGame())) {
+                            reply.addReply(message, player.getSocket());
+                        }
+                        reply.sendReplies();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (GameNotFoundException e) {
+                        e.printStackTrace();
                     }
-                    reply.sendReplies();
-                } catch (IOException e){
-                    e.printStackTrace();
-                } catch (GameNotFoundException e){
-                    e.printStackTrace();
                 }
+            } catch (GameNotFoundException e){
+                e.printStackTrace();
             }
         } else {
             client.endGame(message.getGame());

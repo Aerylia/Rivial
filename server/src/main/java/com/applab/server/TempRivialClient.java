@@ -4,14 +4,15 @@ package com.applab.server;
  * Created by arian on 9-4-2017.
  */
 
-import com.applab.exceptions.GameNotFoundException;
 import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
-import com.applab.model.GameTile;
 import com.applab.model.Player;
+import com.applab.model.WordList;
 import com.applab.server.handlers.RivialHandler;
+import com.applab.server.messages.CapturedTileMessage;
 import com.applab.server.messages.CreateGameMessage;
+import com.applab.server.messages.GameStateRequestMessage;
 import com.applab.server.messages.GetGamesMessage;
 import com.applab.server.messages.InitMessage;
 import com.applab.server.messages.JoinGameMessage;
@@ -20,6 +21,7 @@ import com.applab.server.messages.StartGameMessage;
 
 import java.io.*;
 import java.net.*;
+import java.security.spec.ECField;
 import java.util.ArrayList;
 
 public class TempRivialClient implements Runnable {
@@ -37,82 +39,77 @@ public class TempRivialClient implements Runnable {
         this.initializeConnection();
     }
 
+    // Utility functions
     public Socket getSocket(){
         return this.socket;
     }
 
     public void setPlayer(Player player){
         this.player = player;
+        System.out.println("Setting player: " + player.toString());
     }
 
     public Player getPlayer(){ return player; }
+
+    // Game specific functions
+    // Functions for setting up the game.
+    private void initializeConnection(){
+        this.sendMessageToServer(new InitMessage());
+    }
+
+    public void getGames(){
+        this.sendMessageToServer(new GetGamesMessage());
+    }
 
     public void handleGames(ArrayList<GameModel> games){
         //TODO impl. Show games and let the user pick one.
     }
 
-    public void handleGame(GameModel game){
-        this.game = game;
+    public void createGame(){
+        System.out.println("Game: Creating new Game");
+        this.sendMessageToServer(new CreateGameMessage(this.player.getId()));
     }
 
-    public void endGame(int game){
-        if(this.game.getId() == game){
-            // TODO impl.
+    public void joinGame(int gameID){
+        this.sendMessageToServer(new JoinGameMessage(player.getId(), gameID));
+    }
+
+    public void playerJoinedGame(int playerId, int gameId){
+        requestGameState(gameId);
+    }
+
+    public void requestGameState(int gameId){
+        System.out.println("Requesting GameState!");
+        if(this.game == null || this.game.getId() == gameId) {
+            System.out.println("Requesting GameState!");
+            this.sendMessageToServer(new GameStateRequestMessage(gameId, this.player.getId()));
         }
+    }
+
+    public void handleGameState(GameModel gameModel) {
+        this.game = gameModel;
+    }
+    public void handleGame(int gameId){
+        System.out.println("Handling game");
+        this.requestGameState(gameId);
+    }
+
+    public void initializeStartGame(){
+        this.sendMessageToServer(new StartGameMessage(game.getId(), player.getId()));
     }
 
     public void startGame(){
         // TODO impl.
     }
 
-    public void playerJoinedGame(Player player, GameModel game){
-        if (this.game == null){
-            this.game = game;
-            this.game.addPlayer(player);
-        } else if(this.game.equals(game)) { // TODO check & send Exception!
-            this.game.addPlayer(player); // TODO check & send exception!
-        }
+    public void startFailed() {
+        // TODO
     }
 
-    public void initializeStartGame(){
-        try {
-            ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new StartGameMessage(game, player), socket);
-            reply.sendReplies();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
 
-    private void initializeConnection(){
-        try {
-            ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new InitMessage(), socket);
-            reply.sendReplies();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void getGames(){
-        try {
-            System.out.println("Game: Requesting list of Games!");
-            ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new GetGamesMessage(), socket);
-            reply.sendReplies();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void joinGame(GameModel game){
-        try {
-            ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new JoinGameMessage(player, game), socket);
-            reply.sendReplies();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+    // Functions when playing the game
+    public void captureTile(int tile){
+        this.sendMessageToServer(new CapturedTileMessage(this.game.getId(), tile, this.player.getId()));
     }
 
     public void handleCapturedTile(int game, int player, int tile) throws TileNotFoundException, PlayerNotFoundException{
@@ -127,19 +124,21 @@ public class TempRivialClient implements Runnable {
         }
     }
 
-    public void createGame(){
-        System.out.println("Game: Creating new Game");
+    public void endGame(int game){
+        if(this.game.getId() == game){
+            // TODO impl. goal state
+        }
+    }
+
+    // Networking funcitons
+    public void sendMessageToServer(RivialProtocol message){
         try {
             ReplyProtocol reply = new ReplyProtocol();
-            reply.addReply(new CreateGameMessage(this.player.getId()), socket);
+            reply.addReply(message, socket);
             reply.sendReplies();
         } catch (IOException e){
             e.printStackTrace();
         }
-    }
-
-    public void startFailed() {
-        // TODO
     }
 
     public void run(){
@@ -153,7 +152,6 @@ public class TempRivialClient implements Runnable {
                     // Handle message
                     RivialHandler handler = protocol.getHandler();
                     handler.handleClientSide(this);
-                    System.out.println("Started!");
                     Thread.yield();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -172,9 +170,20 @@ public class TempRivialClient implements Runnable {
         try {
             TempRivialClient temp = new TempRivialClient("localhost", 5964);
             (new Thread(temp)).start();
-            temp.createGame();
-            temp.getGames();
-
+            try {
+                Thread.sleep(1000);
+                temp.getGames();
+                Thread.sleep(1000);
+                temp.createGame();
+                Thread.sleep(10000);
+                System.out.println(temp.game);
+                System.out.println(temp.player);
+                temp.initializeStartGame();
+                Thread.sleep(1000);
+                temp.captureTile(0);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }catch (IOException e){
             e.printStackTrace();
         }

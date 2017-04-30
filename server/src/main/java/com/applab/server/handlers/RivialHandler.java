@@ -26,7 +26,7 @@ public abstract class RivialHandler implements Runnable{
         System.out.print("\n");
         (new Thread(this)).start();
     }
-    public void handleClientSide(TempRivialClient client){
+    public void handleClientSide(TempRivialClient client) {
         this.serverSide = false;
         this.client = client;
         System.out.print("Clientside: ");

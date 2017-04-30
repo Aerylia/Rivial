@@ -34,6 +34,7 @@ public class CapturedTileHandler extends RivialHandler {
                 replyProtocol.sendReplies();
             } catch (IOException e){
                 e.printStackTrace();
+
             } catch (TileNotFoundException e){
                 e.printStackTrace();
             } catch (GameNotFoundException e){

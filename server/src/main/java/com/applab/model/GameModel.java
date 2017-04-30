@@ -1,13 +1,10 @@
 package com.applab.model;
 
-import com.applab.exceptions.GameNotFoundException;
 import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import sun.security.acl.WorldGroupImpl;
 
 /**
  * Created by arian on 9-4-2017.

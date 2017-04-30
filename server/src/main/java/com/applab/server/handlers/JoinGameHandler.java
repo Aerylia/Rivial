@@ -1,5 +1,7 @@
 package com.applab.server.handlers;
 
+import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.model.Player;
 import com.applab.server.ReplyProtocol;
 import com.applab.server.RivialServer;
@@ -25,12 +27,18 @@ public class JoinGameHandler extends RivialHandler {
     public void run(){
         try {
             if (serverSide) {
-                server.joinGame(message.getPlayer(), message.getGame());
-                ReplyProtocol reply = new ReplyProtocol();
-                for(Player player: server.getPlayers(message.getGame())){
-                    reply.addReply(message, player.getSocket());
+                try {
+                    server.joinGame(message.getPlayer(), message.getGame());
+                    ReplyProtocol reply = new ReplyProtocol();
+                    for (Player player : server.getPlayers(message.getGame())) {
+                        reply.addReply(message, player.getSocket());
+                    }
+                    reply.sendReplies();
+                } catch (GameNotFoundException e){
+                    e.printStackTrace();
+                } catch (PlayerNotFoundException e){
+                    e.printStackTrace();
                 }
-                reply.sendReplies();
             } else {
                 client.playerJoinedGame(message.getPlayer(), message.getGame());
             }

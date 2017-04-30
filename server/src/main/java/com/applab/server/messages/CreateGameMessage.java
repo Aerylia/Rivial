@@ -11,7 +11,7 @@ import com.applab.server.handlers.RivialHandler;
 
 public class CreateGameMessage extends RivialProtocol {
 
-    private GameModel game;
+    private int game;
     private int player;
 
     public CreateGameMessage(int player){
@@ -20,11 +20,11 @@ public class CreateGameMessage extends RivialProtocol {
 
     public int getPlayer(){ return this.player; }
 
-    public GameModel getGame() {
+    public int getGame() {
         return game;
     }
 
-    public void addGame(GameModel game){
+    public void addGame(int game){
         this.game = game;
     }
 

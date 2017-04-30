@@ -5,7 +5,6 @@ import com.applab.exceptions.GameNotFoundException;
 import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.exceptions.TileNotFoundException;
 import com.applab.model.GameModel;
-import com.applab.model.GameTile;
 import com.applab.model.Player;
 import com.applab.model.WordList;
 import com.applab.server.handlers.RivialHandler;
@@ -63,10 +62,10 @@ public class RivialServer implements Runnable{
         throw new PlayerNotFoundException();
     }
 
-    public GameModel createGame(int player) throws PlayerNotFoundException{
+    public int createGame(int player) throws PlayerNotFoundException{
         GameModel game = new GameModel(this.words, this.games.size(), this.getPlayerWithId(player));
         this.games.add(game);
-        return game;
+        return game.getId();
     }
 
     public boolean isEndGame(int game) throws GameNotFoundException{
@@ -86,7 +85,9 @@ public class RivialServer implements Runnable{
         return this.getGameWithID(game).getPlayers();
     }
 
-    public boolean canStartGame(Player player, GameModel game) {
+    public boolean canStartGame(int playerID, int gameID) throws GameNotFoundException, PlayerNotFoundException{
+        GameModel game = getGameWithID(gameID);
+        Player player = getPlayerWithId(playerID);
         return game.canStartGame(player);
     }
 
@@ -127,7 +128,7 @@ public class RivialServer implements Runnable{
     }
 
     public static void main(String[] args) throws IOException {
-        String filename = "TODO.csv";
+        String filename = "TODO.csv"; // Also change at clientside
         int port = 5964;
         try {
             RivialServer server = new RivialServer(port, filename );

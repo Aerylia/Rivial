@@ -1,5 +1,7 @@
 package com.applab.server.handlers;
 
+import com.applab.exceptions.GameNotFoundException;
+import com.applab.exceptions.PlayerNotFoundException;
 import com.applab.model.Player;
 import com.applab.server.ReplyProtocol;
 import com.applab.server.messages.StartGameMessage;
@@ -24,18 +26,28 @@ public class StartGameHandler extends RivialHandler {
     public void run() {
         try {
             if (serverSide) {
-                ReplyProtocol replyProtocol = new ReplyProtocol();
-                ArrayList<Player> players = server.getPlayers(message.getGame());
-                if (server.canStartGame(message.getPlayer(), message.getGame())) {
-                    message.setStarted(true);
-                    for (Player player : players) {
-                        replyProtocol.addReply(message, player.getSocket());
+                try {
+                    ReplyProtocol replyProtocol = new ReplyProtocol();
+                    ArrayList<Player> players = server.getPlayers(message.getGame());
+                    if (server.canStartGame(message.getPlayer(), message.getGame())) {
+                        message.setStarted(true);
+                        for (Player player : players) {
+                            replyProtocol.addReply(message, player.getSocket());
+                        }
+                    } else {
+                        message.setStarted(false);
+                        for(Player player: players){
+                            if(player.getId() == message.getPlayer()){
+                                replyProtocol.addReply(message, player.getSocket());
+                            }
+                        }
                     }
-                } else {
-                    message.setStarted(false);
-                    replyProtocol.addReply(message, message.getPlayer().getSocket());
+                    replyProtocol.sendReplies();
+                } catch (PlayerNotFoundException e){
+                    e.printStackTrace();
+                } catch (GameNotFoundException e){
+                    e.printStackTrace();
                 }
-                replyProtocol.sendReplies();
             } else {
                 if(message.isStarted()) {
                     client.startGame();

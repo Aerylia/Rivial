@@ -11,19 +11,19 @@ import com.applab.server.handlers.RivialHandler;
 
 public class JoinGameMessage extends RivialProtocol {
 
-    private Player player;
-    private GameModel game;
+    private int player;
+    private int game;
 
-    public JoinGameMessage(Player player, GameModel game){
+    public JoinGameMessage(int player, int game){
         this.player = player;
         this.game = game;
     }
 
-    public Player getPlayer() {
+    public int getPlayer() {
         return player;
     }
 
-    public GameModel getGame() {
+    public int getGame() {
         return game;
     }
 

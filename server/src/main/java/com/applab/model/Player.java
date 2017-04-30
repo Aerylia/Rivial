@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class Player implements Serializable{
 
-    private Socket socket;
+    private transient Socket socket;
     private int id;
     private int color;
     public static final int BLUE = 0;

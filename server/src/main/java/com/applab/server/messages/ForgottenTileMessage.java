@@ -12,25 +12,25 @@ import com.applab.server.handlers.RivialHandler;
 
 public class ForgottenTileMessage extends RivialProtocol {
 
-    private GameModel game;
-    private GameTile tile;
-    private Player player;
+    private int game;
+    private int tile;
+    private int player;
 
-    public ForgottenTileMessage(GameModel game, GameTile tile, Player player){
+    public ForgottenTileMessage(int game, int tile, int player){
         this.game = game;
         this.tile = tile;
         this.player = player;
     }
 
-    public GameModel getGame() {
+    public int getGame() {
         return game;
     }
 
-    public GameTile getTile() {
+    public int getTile() {
         return tile;
     }
 
-    public Player getPlayer() {
+    public int getPlayer() {
         return player;
     }
 
