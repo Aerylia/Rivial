@@ -169,7 +169,7 @@ public class TempRivialClient implements Runnable {
                 Thread.sleep(1000);
                 temp.getGames();
                 Thread.sleep(1000);
-                temp.createGame();
+                temp.joinGame(0);
                 Thread.sleep(1000);
                 temp.initializeStartGame();
                 Thread.sleep(1000);

@@ -21,7 +21,7 @@ public abstract class RivialHandler implements Runnable{
         this.serverSide = true;
         this.server = server;
         this.clientSocket = client;
-        System.out.print("ServerSide: ");
+        System.out.print("Handling serverSide: ");
         System.out.print(this.toString());
         System.out.print("\n");
         (new Thread(this)).start();
@@ -29,7 +29,7 @@ public abstract class RivialHandler implements Runnable{
     public void handleClientSide(TempRivialClient client) {
         this.serverSide = false;
         this.client = client;
-        System.out.print("Clientside: ");
+        System.out.print("Handling clientside: ");
         System.out.print(this.toString());
         System.out.print("\n");
         (new Thread(this)).start();

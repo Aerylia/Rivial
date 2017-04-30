@@ -1,5 +1,7 @@
 package com.applab.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
@@ -10,6 +12,7 @@ import java.net.Socket;
 public class Player implements Serializable{
 
     private transient Socket socket;
+    //private transient ObjectInputStream stream;
     private int id;
     private int color;
     public static final int BLUE = 0;
@@ -19,6 +22,11 @@ public class Player implements Serializable{
     public Player(Socket socket, int id){
         this.socket = socket;
         this.id = id;
+      /*  try {
+            this.stream = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e){
+            e.printStackTrace();
+        }*/
     }
 
     public void setColor(int color){
@@ -36,5 +44,8 @@ public class Player implements Serializable{
     public int getColor() {
         return color;
     }
-
+/*
+    public ObjectInputStream getStream() {
+        return stream;
+    }*/
 }

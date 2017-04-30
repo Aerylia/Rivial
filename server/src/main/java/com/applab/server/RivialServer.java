@@ -42,6 +42,8 @@ public class RivialServer implements Runnable{
         }
         Player player = new Player(client, clients.size());
         clients.add(player);
+        Thread thread = new Thread(new ReadThread(this, client));
+        thread.start();
         return player;
     }
 
@@ -101,30 +103,30 @@ public class RivialServer implements Runnable{
 
     @Override
     public void run() {
-        try {
-            while (true){
-                for(Player player: clients) {
-                    Socket client = player.getSocket();
-                    ObjectInputStream in = new ObjectInputStream(
-                            client.getInputStream());
-                    try {
-                        // Read protocol
-                        Object input = in.readObject();
-                        RivialProtocol protocol = (RivialProtocol) input;
-                        // Handle message
-                        RivialHandler handler = protocol.getHandler();
-                        handler.handleServerSide(this, client);
-                        Thread.yield();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
+        while(true){
+            try {
+                Socket currentClient = this.getServerSocket().accept();
+                System.out.println("Server: NEW CONNECTION " + currentClient.toString());
+                ObjectInputStream in = new ObjectInputStream(
+                        currentClient.getInputStream());
+                try {
+                    // Read protocol
+                    Object input = in.readObject();
+                    RivialProtocol protocol = (RivialProtocol) input;
+                    // Handle message
+                    RivialHandler handler = protocol.getHandler();
+                    handler.handleServerSide(this, currentClient);
+                    this.addClient(currentClient);
+                    Thread.yield();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
+            } catch (IOException e){
+                System.out.println("Exception caught when trying to listen for a connection");
+                System.out.println(e.getMessage());
             }
-        } catch (IOException e){
-            System.out.println("Exception caught when trying to listen on port "
-                    + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
         }
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -132,8 +134,6 @@ public class RivialServer implements Runnable{
         int port = 5964;
         try {
             RivialServer server = new RivialServer(port, filename );
-            RivialDaemon daemon = new RivialDaemon(server);
-            daemon.start();
             (new Thread(server)).start();
         }catch (IOException e){
             e.printStackTrace();
@@ -141,4 +141,46 @@ public class RivialServer implements Runnable{
 
     }
 
+
+    private class ReadThread implements Runnable {
+
+        private RivialServer server;
+        private Socket client;
+        private boolean connected;
+
+        public ReadThread(RivialServer server, Socket client){
+            this.server = server;
+            this.client = client;
+            connected = true;
+        }
+
+        public void disconnect(){
+            this.connected = false;
+        }
+
+        public Thread reconnect(){
+            this.connected = true;
+            Thread thread = new Thread(this);
+            thread.start();
+            return thread;
+        }
+
+        @Override
+        public void run() {
+            while(connected) {
+                try {
+                    ObjectInputStream in = new ObjectInputStream(client.getInputStream());
+                    Object input = in.readObject();
+                    RivialProtocol protocol = (RivialProtocol) input;
+                    // Handle message
+                    RivialHandler handler = protocol.getHandler();
+                    handler.handleServerSide(server, client);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
