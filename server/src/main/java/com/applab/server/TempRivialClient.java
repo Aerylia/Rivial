@@ -46,7 +46,6 @@ public class TempRivialClient implements Runnable {
 
     public void setPlayer(Player player){
         this.player = player;
-        System.out.println("Setting player: " + player.toString());
     }
 
     public Player getPlayer(){ return player; }
@@ -66,7 +65,6 @@ public class TempRivialClient implements Runnable {
     }
 
     public void createGame(){
-        System.out.println("Game: Creating new Game");
         this.sendMessageToServer(new CreateGameMessage(this.player.getId()));
     }
 
@@ -79,9 +77,7 @@ public class TempRivialClient implements Runnable {
     }
 
     public void requestGameState(int gameId){
-        System.out.println("Requesting GameState!");
         if(this.game == null || this.game.getId() == gameId) {
-            System.out.println("Requesting GameState!");
             this.sendMessageToServer(new GameStateRequestMessage(gameId, this.player.getId()));
         }
     }
@@ -90,7 +86,6 @@ public class TempRivialClient implements Runnable {
         this.game = gameModel;
     }
     public void handleGame(int gameId){
-        System.out.println("Handling game");
         this.requestGameState(gameId);
     }
 
@@ -175,12 +170,10 @@ public class TempRivialClient implements Runnable {
                 temp.getGames();
                 Thread.sleep(1000);
                 temp.createGame();
-                Thread.sleep(10000);
-                System.out.println(temp.game);
-                System.out.println(temp.player);
+                Thread.sleep(1000);
                 temp.initializeStartGame();
                 Thread.sleep(1000);
-                temp.captureTile(0);
+                System.out.println(temp.game.getPlayers().get(0).getId());
             } catch (Exception e){
                 e.printStackTrace();
             }

@@ -24,8 +24,6 @@ public class GameStateRequestHandler extends RivialHandler {
     public void run() {
         try {
             if(serverSide){
-
-                System.out.println("Serverside: Received GameState Request!");
                 for(GameModel game: server.getGames()){
                     if(game.getId() == message.getGameID()){
                         message.setGameModel(game);
@@ -39,7 +37,6 @@ public class GameStateRequestHandler extends RivialHandler {
                 }
                 replyProtocol.sendReplies();
             } else {
-                System.out.println("Clientside: Received GameState!");
                 client.handleGameState(message.getGameModel());
             }
         } catch (IOException e){
